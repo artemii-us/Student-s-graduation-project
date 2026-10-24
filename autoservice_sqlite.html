@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>База данных автосервиса — SQLite</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f4f6f8;color:#222;max-width:1100px;margin:0 auto;padding:30px;line-height:1.6}
+h1{color:#1f2937;border-bottom:3px solid #2563eb;padding-bottom:10px}
+h2{color:#1d4ed8;margin-top:40px}
+.description{background:white;padding:20px;border-radius:10px;margin:20px 0;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+table{width:100%;border-collapse:collapse;background:white;margin:15px 0 30px}
+th{background:#2563eb;color:white;padding:12px;text-align:left}
+td{padding:10px 12px;border-bottom:1px solid #ddd}
+tr:hover{background:#f8fafc}
+code{background:#e5e7eb;padding:2px 5px;border-radius:4px}
+pre{
+    background:#111827;
+    color:#e5e7eb;
+    padding:22px 24px;
+    border-radius:12px;
+    overflow-x:auto;
+    font-family:"JetBrains Mono","Fira Code","Courier New",monospace;
+    font-size:14px;
+    line-height:1.7;
+    tab-size:4;
+    white-space:pre;
+    box-shadow:0 4px 14px rgba(0,0,0,.12);
+    border:1px solid #374151;
+}
+pre code{
+    background:transparent;
+    padding:0;
+    border-radius:0;
+    color:inherit;
+    font-family:inherit;
+}
+.sql-keyword{color:#93c5fd;font-weight:700}
+.sql-type{color:#86efac}
+.relation{background:#eff6ff;border-left:4px solid #2563eb;padding:15px;margin:10px 0}
+</style>
+</head>
+<body>
+<h1>База данных автосервиса</h1>
+
+<div class="description">
+<h2>Описание проекта</h2>
+<p>Необходимо разработать простую базу данных для автосервиса. База данных должна хранить информацию о владельцах автомобилей, автомобилях, мастерах и проведённых ремонтах.</p>
+<ul>
+<li><strong>Владельцы</strong> — клиенты автосервиса;</li>
+<li><strong>Машины</strong> — автомобили клиентов;</li>
+<li><strong>Мастера</strong> — сотрудники автосервиса;</li>
+<li><strong>Ремонты</strong> — информация о выполненных ремонтах.</li>
+</ul>
+</div>
+
+<h2>1. Таблица «Владельцы»</h2>
+<div class="description">Хранит информацию о владельцах автомобилей.</div>
+<table>
+<tr><th>Поле</th><th>Тип SQLite</th><th>Описание</th></tr>
+<tr><td><code>id</code></td><td>INTEGER</td><td>Уникальный идентификатор владельца</td></tr>
+<tr><td><code>name</code></td><td>TEXT</td><td>Имя владельца</td></tr>
+<tr><td><code>phone</code></td><td>TEXT</td><td>Номер телефона</td></tr>
+<tr><td><code>address</code></td><td>TEXT</td><td>Адрес владельца</td></tr>
+</table>
+
+<h2>2. Таблица «Машины»</h2>
+<div class="description">Хранит информацию об автомобилях. Поле <code>owner_id</code> указывает, кому принадлежит автомобиль.</div>
+<table>
+<tr><th>Поле</th><th>Тип SQLite</th><th>Описание</th></tr>
+<tr><td><code>id</code></td><td>INTEGER</td><td>Уникальный идентификатор автомобиля</td></tr>
+<tr><td><code>brand</code></td><td>TEXT</td><td>Марка автомобиля</td></tr>
+<tr><td><code>model</code></td><td>TEXT</td><td>Модель автомобиля</td></tr>
+<tr><td><code>year</code></td><td>INTEGER</td><td>Год выпуска</td></tr>
+<tr><td><code>plate_number</code></td><td>TEXT</td><td>Государственный регистрационный номер</td></tr>
+<tr><td><code>owner_id</code></td><td>INTEGER</td><td>Идентификатор владельца</td></tr>
+</table>
+
+<h2>3. Таблица «Мастера»</h2>
+<div class="description">Содержит информацию о сотрудниках автосервиса, которые выполняют ремонт автомобилей.</div>
+<table>
+<tr><th>Поле</th><th>Тип SQLite</th><th>Описание</th></tr>
+<tr><td><code>id</code></td><td>INTEGER</td><td>Уникальный идентификатор мастера</td></tr>
+<tr><td><code>name</code></td><td>TEXT</td><td>Имя мастера</td></tr>
+<tr><td><code>phone</code></td><td>TEXT</td><td>Номер телефона</td></tr>
+<tr><td><code>specialization</code></td><td>TEXT</td><td>Специализация мастера</td></tr>
+</table>
+
+<h2>4. Таблица «Ремонты»</h2>
+<div class="description">Хранит информацию о выполненных ремонтах. Каждый ремонт связан с конкретным автомобилем и конкретным мастером.</div>
+<table>
+<tr><th>Поле</th><th>Тип SQLite</th><th>Описание</th></tr>
+<tr><td><code>id</code></td><td>INTEGER</td><td>Уникальный идентификатор ремонта</td></tr>
+<tr><td><code>car_id</code></td><td>INTEGER</td><td>Идентификатор автомобиля</td></tr>
+<tr><td><code>master_id</code></td><td>INTEGER</td><td>Идентификатор мастера</td></tr>
+<tr><td><code>description</code></td><td>TEXT</td><td>Описание выполненного ремонта</td></tr>
+<tr><td><code>repair_date</code></td><td>TEXT</td><td>Дата проведения ремонта</td></tr>
+<tr><td><code>price</code></td><td>REAL</td><td>Стоимость ремонта</td></tr>
+</table>
+
+<h2>Связи между таблицами</h2>
+<div class="relation"><strong>Владелец → Машины</strong><br>Один владелец может иметь несколько автомобилей. Связь: <strong>1 : N</strong></div>
+<div class="relation"><strong>Машина → Ремонты</strong><br>Один автомобиль может проходить ремонт несколько раз. Связь: <strong>1 : N</strong></div>
+<div class="relation"><strong>Мастер → Ремонты</strong><br>Один мастер может выполнить много ремонтов. Связь: <strong>1 : N</strong></div>
+
+<h2>Общая структура</h2>
+<pre>Владельцы
+    │
+    │ 1 : N
+    ▼
+Машины
+    │
+    │ 1 : N
+    ▼
+Ремонты
+    ▲
+    │ N : 1
+Мастера</pre>
+
+<h2>Создание таблиц в SQLite</h2>
+<div class="description"><p>SQL-код ниже можно целиком выполнить в SQLite. Отступы сделаны так, чтобы структура каждой таблицы была хорошо видна.</p></div>
+<pre><code><span class="sql-keyword">PRAGMA</span> foreign_keys = ON;
+
+<span class="sql-keyword">CREATE TABLE</span> owners (
+    id <span class="sql-type">INTEGER</span> <span class="sql-keyword">PRIMARY KEY</span> <span class="sql-keyword">AUTOINCREMENT</span>,
+    name <span class="sql-type">TEXT</span> <span class="sql-keyword">NOT NULL</span>,
+    phone <span class="sql-type">TEXT</span>,
+    address <span class="sql-type">TEXT</span>
+);
+
+<span class="sql-keyword">CREATE TABLE</span> cars (
+    id <span class="sql-type">INTEGER</span> <span class="sql-keyword">PRIMARY KEY</span> <span class="sql-keyword">AUTOINCREMENT</span>,
+    brand <span class="sql-type">TEXT</span> <span class="sql-keyword">NOT NULL</span>,
+    model <span class="sql-type">TEXT</span> <span class="sql-keyword">NOT NULL</span>,
+    year <span class="sql-type">INTEGER</span>,
+    plate_number <span class="sql-type">TEXT</span>,
+    owner_id <span class="sql-type">INTEGER</span> <span class="sql-keyword">NOT NULL</span>,
+
+    <span class="sql-keyword">FOREIGN KEY</span> (owner_id)
+        <span class="sql-keyword">REFERENCES</span> owners(id)
+);
+
+<span class="sql-keyword">CREATE TABLE</span> masters (
+    id <span class="sql-type">INTEGER</span> <span class="sql-keyword">PRIMARY KEY</span> <span class="sql-keyword">AUTOINCREMENT</span>,
+    name <span class="sql-type">TEXT</span> <span class="sql-keyword">NOT NULL</span>,
+    phone <span class="sql-type">TEXT</span>,
+    specialization <span class="sql-type">TEXT</span>
+);
+
+<span class="sql-keyword">CREATE TABLE</span> repairs (
+    id <span class="sql-type">INTEGER</span> <span class="sql-keyword">PRIMARY KEY</span> <span class="sql-keyword">AUTOINCREMENT</span>,
+    car_id <span class="sql-type">INTEGER</span> <span class="sql-keyword">NOT NULL</span>,
+    master_id <span class="sql-type">INTEGER</span> <span class="sql-keyword">NOT NULL</span>,
+    description <span class="sql-type">TEXT</span> <span class="sql-keyword">NOT NULL</span>,
+    repair_date <span class="sql-type">TEXT</span>,
+    price <span class="sql-type">REAL</span>,
+
+    <span class="sql-keyword">FOREIGN KEY</span> (car_id)
+        <span class="sql-keyword">REFERENCES</span> cars(id),
+
+    <span class="sql-keyword">FOREIGN KEY</span> (master_id)
+        <span class="sql-keyword">REFERENCES</span> masters(id)
+);</code></pre>
+
+<h2>Что нужно запомнить</h2>
+<div class="description">
+<ul>
+<li><code>PRIMARY KEY</code> — уникальный идентификатор записи.</li>
+<li><code>FOREIGN KEY</code> — связь с другой таблицей.</li>
+<li><code>NOT NULL</code> — поле обязательно для заполнения.</li>
+<li><code>INTEGER</code> — целое число.</li>
+<li><code>TEXT</code> — текст.</li>
+<li><code>REAL</code> — число с дробной частью.</li>
+</ul>
+</div>
+</body>
+</html>
